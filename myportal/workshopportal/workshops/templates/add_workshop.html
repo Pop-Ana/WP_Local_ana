@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Workshops hinzufügen
+{% endblock %}
+
+{% block content %}
+    <h1>Workshop Hinzufügen</h1>
+    <div class="workshop-form" >
+        <form method="POST" action="">
+            {% csrf_token %}
+            <label for="name">Workshop Name:</label>
+            <input type="text" id="name" name="name" required>  
+
+            <label for="description">Beschreibung:</label>
+            <textarea id="description" name="description" rows="4" required></textarea> 
+
+            <label for="location">Ort:</label>
+            <input type="text" id="location" name="location" required> 
+
+            <label for="date">Datum:</label>
+            <input type="date" id="date" name="date" required>  
+
+            <label for="start_time">Startzeit:</label>
+            <input type="time" id="start_time" name="start_time" required> 
+
+            <label for="end_time">Endzeit:</label>
+            <input type="time" id="end_time" name="end_time" required> 
+
+            <label for="participants">Teilnehmer:</label>
+            <input type="number" id="participants" name="participants" min="0" value="0" required>  
+
+            <label for="cost">Kosten:</label>
+            <input type="number" id="cost" name="cost" min="0" value="0" required>        
+
+            <button type="submit">Hinzufügen</button>
+        </form>
+    </div>
+{% endblock %}

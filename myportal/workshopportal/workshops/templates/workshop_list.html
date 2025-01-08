@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Alle Workshops
+{% endblock %}
+
+{% block content %}
+  <h1>Verfügbare Workshops</h1>
+
+  <ul style="list-style: none; padding: 0;">
+    {% for workshop in workshops %}
+      <li style="background-color: {% if workshop.participant_limit == workshop.teilnahme_set.count %}#ffcccc{% else %}#e7f3ff{% endif %}; padding: 15px; margin-bottom: 10px;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <strong>{{ workshop.title }}</strong>
+            <span style="cursor: pointer; color: #007bff;" onclick="toggleDetails('details{{ forloop.counter }}')">Details</span>
+          </div>
+          <div>
+            <span>{{ workshop.teilnahme_set.count }}/{{ workshop.participant_limit }}</span>
+            {% if workshop.teilnahme_set.count < workshop.participant_limit %}
+              <button>Teilnehmen</button>
+            {% else %}
+              <button disabled>Voll</button>
+            {% endif %}
+          </div>
+        </div>
+        <div id="details{{ forloop.counter }}" style="display: none; margin-top: 10px; padding-left: 20px;">
+          <p><strong>Beschreibung:</strong> {{ workshop.description }}</p>
+          <p><strong>Ort:</strong> {{ workshop.location }}</p>
+          <p><strong>Datum:</strong> {{ workshop.date }}</p>
+          <p><strong>Start:</strong> {{ workshop.starttime }}</p>
+          <p><strong>Ende:</strong> {{ workshop.endtime }}</p>
+          <p><strong>Teilnehmer:</strong> 
+            {% for teilnahme in workshop.teilnahme_set.all %}
+              {{ teilnahme.student.name }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+          </p>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <script>
+    function toggleDetails(id) {
+      const element = document.getElementById(id);
+      element.style.display = element.style.display === "none" ? "block" : "none";
+    }
+  </script>
+{% endblock %}

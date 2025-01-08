@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Alle Klassen
+{% endblock %}
+
+{% block content %}
+  <h1>Klassenübersicht</h1>
+
+  <ul style="list-style: none; padding: 0;">
+    {% for class in classes %}
+      <li style="background-color: #e7f3ff; padding: 15px; margin-bottom: 10px;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <strong>{{ class.name }}</strong>
+            <span style="cursor: pointer; color: #007bff;" onclick="toggleDetails('classDetails{{ forloop.counter }}')">Schüler anzeigen</span>
+          </div>
+          <div>
+            <button id="allow-all-{{ class.id }}" data-action="allow" data-class-id="{{ class.id }}">Alle erlauben</button> 
+            <button id="deny-all-{{ class.id }}" data-action="deny" data-class-id="{{ class.id }}">Alle verbieten</button>
+          </div>
+        </div>
+        <div id="classDetails{{ forloop.counter }}" style="display: none; margin-top: 10px; padding-left: 20px;">
+          <h3>Schüler:</h3>
+          <ul style="list-style: none; padding: 0;">
+            {% for student in class.students.all %}
+                <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                  <span>{{ student.name }}</span>
+                  <button onclick="toggleStudentPermission('{{ student.id }}', {{ student.permission_granted|yesno:"true,false" }})"
+                          style="background-color: {% if student.permission_granted %}#4CAF50{% else %}#f44336{% endif %}; color: white; border: none; padding: 5px 10px; cursor: pointer;">
+                    {{ student.permission_granted|yesno:"Ja,Nein" }}
+                  </button>
+                </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <script>
+    function toggleDetails(id) {
+      const element = document.getElementById(id);
+      element.style.display = element.style.display === "none" ? "block" : "none";
+    }
+
+    function toggleStudentPermission(studentId, currentPermission) {
+      const newPermission = !currentPermission;
+    
+      console.log(`Toggling permission for student ${studentId} to ${newPermission}`);
+    
+      // Send the data as JSON
+      const payload = {
+          permission: newPermission
+      };
+    
+      fetch(`/update-student-permission/${studentId}/`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json", // Send as JSON
+              "X-CSRFToken": getCookie("csrftoken"),
+          },
+          body: JSON.stringify(payload), // Convert payload to JSON string
+      })
+      .then((response) => response.json())
+      .then((data) => {
+          console.log(data); // Log the response for debugging
+          if (data.success) {
+              alert(data.message);
+              location.reload(); // Reload the page to reflect the changes
+          } else {
+              alert(data.error);
+          }
+      })
+      .catch((error) => console.error("Error:", error));
+    }
+
+    document.querySelectorAll("button[data-action]").forEach(
+        (button) => { button.addEventListener("click", function () {
+             const action = this.getAttribute("data-action"); 
+             const classId = this.getAttribute("data-class-id"); // Send the data as JSON 
+             const payload = { action: action }; 
+             fetch(`/update-class-permission/${classId}/`, {
+                 method: "POST", 
+                 headers: { 
+                    "Content-Type": "application/json", // Send as JSON 
+                    "X-CSRFToken": getCookie("csrftoken"), },
+                 body: JSON.stringify(payload), // Convert payload to JSON string 
+                 }) 
+             .then((response) => response.json()) 
+             .then((data) => { 
+                if (data.success) { 
+                    alert(data.message);
+                    location.reload();
+                } else { 
+                    alert(data.error); } 
+             }) 
+             .catch((error) => console.error("Error:", error));
+         }); 
+     });
+
+
+// Helper function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+  </script>
+{% endblock %}
