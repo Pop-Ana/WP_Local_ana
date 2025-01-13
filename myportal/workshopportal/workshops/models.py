@@ -52,6 +52,24 @@ class Workshop(models.Model):
     def __str__(self):
         return self.title
 
+class TwoDayWorkshop(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    location = models.CharField(max_length=255)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    day1_start_time = models.TimeField()
+    day1_end_time = models.TimeField()
+    day2_start_time = models.TimeField(null=True, blank=True)
+    day2_end_time = models.TimeField(null=True, blank=True)
+    overnight = models.BooleanField(default=False)
+    participant_limit = models.IntegerField()
+    cost = models.DecimalField(max_digits=10, decimal_places=2)
+    teacher = models.ForeignKey(Lehrer, on_delete=models.CASCADE, related_name="two_day_workshops")
+
+    def __str__(self):
+        return self.title
+
 # Participation Model for Students Joining Workshops
 class Teilnahme(models.Model):
     student = models.ForeignKey(Schüler, on_delete=models.CASCADE)

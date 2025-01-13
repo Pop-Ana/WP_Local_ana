@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Workshop, Schüler, Klasse, Lehrer
+from .models import Workshop, Schüler, Klasse, Lehrer, TwoDayWorkshop
 from django.http import HttpResponse, JsonResponse
 from django.template import loader
 import requests, json
@@ -19,8 +19,10 @@ def list_workshops(request):
     workshop_participants = {
         workshop.id: workshop.teilnahme_set.all() for workshop in workshops
     }
+    two_day_workshops = TwoDayWorkshop.objects.all()
     return render(request, 'workshop_list.html', {
         'workshops': workshops,
+        'two_day_workshops': two_day_workshops,
         'workshop_participants': workshop_participants,
     })
 

@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block content %}
-  <h1>Verfügbare Workshops</h1>
 
   <ul style="list-style: none; padding: 0;">
+    <h2>Eintägige Workshops</h2>
     {% for workshop in workshops %}
       <li class="workshop-item" style="background-color: {% if workshop.participant_limit == workshop.teilnahme_set.count %}#ffcccc{% else %}#e7f3ff{% endif %}; padding: 15px; margin-bottom: 10px;">
         <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -30,6 +30,46 @@
           <p><strong>Datum:</strong> {{ workshop.date }}</p>
           <p><strong>Start:</strong> {{ workshop.starttime }}</p>
           <p><strong>Ende:</strong> {{ workshop.endtime }}</p>
+          <p><strong>Teilnehmer:</strong> 
+            {% for teilnahme in workshop.teilnahme_set.all %}
+              {{ teilnahme.student.name }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+          </p>
+        </div>
+      </li>
+    {% endfor %}
+
+    <h2>Zweitägige Workshops</h2>
+    {% for workshop in two_day_workshops %}
+      <li class="workshop-item" style="background-color: {% if workshop.participant_limit == workshop.teilnahme_set.count %}#ffcccc{% else %}#e7f3ff{% endif %}; padding: 15px; margin-bottom: 10px;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <strong>{{ workshop.title }}</strong>
+            <span style="cursor: pointer; color: #007bff;" onclick="toggleDetails('detailsTwoDay{{ forloop.counter }}')">Details</span>
+          </div>
+          <div>
+            <span>{{ workshop.teilnahme_set.count }}/{{ workshop.participant_limit }}</span>
+            {% if workshop.teilnahme_set.count < workshop.participant_limit %}
+              <form method="post" action="{% url 'teilnehmen' workshop.id %}">
+                {% csrf_token %}
+                <button type="submit">Teilnehmen</button>
+              </form>
+            {% else %}
+              <button disabled>Voll</button>
+            {% endif %}
+          </div>
+        </div>
+        <div id="detailsTwoDay{{ forloop.counter }}" style="display: none; margin-top: 10px; padding-left: 20px;">
+          <p><strong>Beschreibung:</strong> {{ workshop.description }}</p>
+          <p><strong>Ort:</strong> {{ workshop.location }}</p>
+          <p><strong>Startdatum:</strong> {{ workshop.start_date }}</p>
+          <p><strong>Enddatum:</strong> {{ workshop.end_date }}</p>
+          <p><strong>Tag 1 Start:</strong> {{ workshop.day1_start_time }}</p>
+          <p><strong>Tag 1 Ende:</strong> {{ workshop.day1_end_time }}</p>
+          {% if not workshop.overnight %}
+            <p><strong>Tag 2 Start:</strong> {{ workshop.day2_start_time }}</p>
+            <p><strong>Tag 2 Ende:</strong> {{ workshop.day2_end_time }}</p>
+          {% endif %}
           <p><strong>Teilnehmer:</strong> 
             {% for teilnahme in workshop.teilnahme_set.all %}
               {{ teilnahme.student.name }}{% if not forloop.last %}, {% endif %}
