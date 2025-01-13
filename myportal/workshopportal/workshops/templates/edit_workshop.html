@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Workshop Bearbeiten
+{% endblock %}
+
+{% block content %}
+<div class="workshop-form" >
+    <form method="post">
+        {% csrf_token %}
+        <label for="name">Titel:</label>
+        <input type="text" id="name" name="name" value="{{ workshop.title }}" required><br>
+    
+        <label for="description">Beschreibung:</label>
+        <textarea id="description" name="description" required>{{ workshop.description }}</textarea><br>
+    
+        <label for="date">Datum:</label>
+        <input type="date" id="date" name="date" value="{{ workshop.date|date:'Y-m-d' }}" required><br>
+    
+        <label for="start_time">Startzeit:</label>
+        <input type="time" id="start_time" name="start_time" value="{{ workshop.starttime|time:'H:i' }}" required><br>
+    
+        <label for="end_time">Endzeit:</label>
+        <input type="time" id="end_time" name="end_time" value="{{ workshop.endtime|time:'H:i' }}" required><br>
+    
+        <label for="location">Ort:</label>
+        <input type="text" id="location" name="location" value="{{ workshop.location }}" required><br>
+    
+        <label for="participants">Teilnehmerlimit:</label>
+        <input type="number" id="participants" name="participants" value="{{ workshop.participant_limit }}" required><br>
+    
+        <label for="cost">Kosten:</label>
+        <input type="number" step="0.01" id="cost" name="cost" value="{{ workshop.cost }}" required><br>
+    
+        <label for="teacher_kuerzel">Lehrer:</label>
+        <select id="teacher_kuerzel" name="teacher_kuerzel" required>
+            {% for teacher in teachers %}
+                <option value="{{ teacher.kuerzel }}" {% if teacher == workshop.teacher %}selected{% endif %}>
+                    {{ teacher.kuerzel }} - {{ teacher.name }}
+                </option>
+            {% endfor %}
+        </select><br>
+    
+        <button type="submit">Workshop aktualisieren</button>
+    </form>
+</div>
+{% endblock %}

@@ -4,36 +4,48 @@
   Workshops hinzufügen
 {% endblock %}
 
+<nav>
+    <ul>
+        <li><a href="/workshops">Home</a></li>
+    </ul>
+</nav>
 {% block content %}
     <h1>Workshop Hinzufügen</h1>
     <div class="workshop-form" >
-        <form method="POST" action="">
+        <form method="post">
             {% csrf_token %}
-            <label for="name">Workshop Name:</label>
-            <input type="text" id="name" name="name" required>  
-
+            <label for="name">Titel:</label>
+            <input type="text" id="name" name="name" required><br>
+        
             <label for="description">Beschreibung:</label>
-            <textarea id="description" name="description" rows="4" required></textarea> 
-
-            <label for="location">Ort:</label>
-            <input type="text" id="location" name="location" required> 
-
+            <textarea id="description" name="description" required></textarea><br>
+        
             <label for="date">Datum:</label>
-            <input type="date" id="date" name="date" required>  
-
+            <input type="date" id="date" name="date" required><br>
+        
             <label for="start_time">Startzeit:</label>
-            <input type="time" id="start_time" name="start_time" required> 
-
+            <input type="time" id="start_time" name="start_time" required><br>
+        
             <label for="end_time">Endzeit:</label>
-            <input type="time" id="end_time" name="end_time" required> 
-
-            <label for="participants">Teilnehmer:</label>
-            <input type="number" id="participants" name="participants" min="0" value="0" required>  
-
+            <input type="time" id="end_time" name="end_time" required><br>
+        
+            <label for="location">Ort:</label>
+            <input type="text" id="location" name="location" required><br>
+        
+            <label for="participants">Teilnehmerlimit:</label>
+            <input type="number" id="participants" name="participants" required><br>
+        
             <label for="cost">Kosten:</label>
-            <input type="number" id="cost" name="cost" min="0" value="0" required>        
-
-            <button type="submit">Hinzufügen</button>
+            <input type="number" step="0.01" id="cost" name="cost" required><br>
+        
+            <label for="teacher_kuerzel">Lehrer:</label>
+            <select id="teacher_kuerzel" name="teacher_kuerzel" required>
+                {% for teacher in teachers %}
+                    <option value="{{ teacher.kuerzel }}">{{ teacher.kuerzel }} - {{ teacher.name }}</option>
+                {% endfor %}
+            </select><br>
+        
+            <button type="submit">Workshop hinzufügen</button>
         </form>
     </div>
 {% endblock %}

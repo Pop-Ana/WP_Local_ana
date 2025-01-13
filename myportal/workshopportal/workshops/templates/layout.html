@@ -12,7 +12,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background-color: white;
             color: #333;
         }
         header, footer {
@@ -42,13 +42,13 @@
         }
         nav ul li a {
             text-decoration: none;
-            color: #fff;
+            color: #333;
             padding: 8px 16px;
-            background-color: #2e528d;
+            background-color: #ececec;
             border-radius: 5px;
         }
         nav ul li a:hover {
-            background-color: #1b3561;
+            background-color: #7BACDB;
         }
 
         .container {
@@ -65,6 +65,90 @@
             right: 20px;
             width: 50px;
             height: auto; 
+        }
+        .workshop-form input, .workshop-form textarea, .workshop-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .workshop-form button {
+            background-color: #2E528D;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .workshop-form button:hover {
+            background-color: #7BACDB;
+        }
+        .workshop-liste {
+            margin-bottom: 30px;
+        }
+        .workshop-liste h2 {
+            font-size: 24px;
+            color: #2E528D;
+            border-bottom: 2px solid #2E528D;
+            padding-bottom: 10px;
+        }
+        .workshop-item {
+            background-color: #e7f3ff;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+        }
+        .workshop-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .workshop-item div {
+            margin-bottom: 10px;
+        }
+        .workshop-item strong {
+            font-size: 18px;
+            color: #2E528D;
+        }
+        .workshop-item span {
+            cursor: pointer;
+            color: #007bff;
+            text-decoration: underline;
+        }
+        .workshop-item span:hover {
+            color: #0056b3;
+        }
+        .workshop-item button {
+            background-color: #d3d3d3;
+            color: #333;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+        }
+        .workshop-item button:hover {
+            background-color: #b0b0b0;
+        }
+        .participants {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .participants span {
+            margin-right: 10px;
+        }
+        .participants button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #007bff;
+        }
+        .participants button:hover {
+            color: #0056b3;
         }
 
         @media (max-width: 768px) {
@@ -87,12 +171,14 @@
 <body>
     <header>
         <h1>Workshops</h1>
+        <img src="{% static 'images/HTL_Logo.png' %}" alt="logo" class="logo">
     </header>
     <nav>
         <ul>
-            <li><a href="/">Home</a></li>
             <li><a href="/workshops/">Workshops</a></li>
-            <li><a href="/settings/">Einstellungen</a></li>
+            <li><a href="/add_workshop">Hinzufügen</a></li>
+            <li><a href="/display_and_edit/">Bearbeiten</a></li>
+            <li><a href="/students/">Schüler</a></li>
         </ul>
     </nav>
     <div class="container">        
