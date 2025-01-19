@@ -6,10 +6,10 @@
 
 {% block content %}
     <div class="workshop-liste">
-        <h2>Workshop Liste</h2>
+        <h2>Eintägige Workshops</h2>
         <ul style="list-style: none; padding: 0;">
             {% for workshop in workshops %}
-            <li class="workshop-item">
+            <li class="workshop-item" style="background-color: {% if workshop.participant_limit == workshop.teilnahme_set.count %}#ffcccc{% else %}#e7f3ff{% endif %}; padding: 15px; margin-bottom: 10px;">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div>
                         <strong>{{ workshop.title }}</strong>
@@ -20,7 +20,7 @@
                         <button onclick="toggleParticipants('participants-list-{{ forloop.counter }}')">&#9660;</button>
                     </div>
                     <div>
-                        <a href="{% url 'edit_workshop' workshop.id %}"><button>Bearbeiten</button></a>
+                        <a href="{% url 'edit_single_workshop' workshop.id %}"><button>Bearbeiten</button></a>
                         <form method="post" action="{% url 'delete_workshop' workshop.id %}" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" onclick="return confirm('Möchten Sie diesen Workshop wirklich löschen?');">Löschen</button>
@@ -29,11 +29,59 @@
                 </div>
                 <!-- Workshop-Details -->
                 <div id="details{{ forloop.counter }}" style="display: none; margin-top: 10px;">
+                    <p><strong>Lehrer:</strong> {{ workshop.teacher.name }}</p>
                     <p><strong>Beschreibung:</strong> {{ workshop.description }}</p>
                     <p><strong>Ort:</strong> {{ workshop.location }}</p>
                     <p><strong>Datum:</strong> {{ workshop.date }}</p>
-                    <p><strong>Start:</strong> {{ workshop.starttime }}</p>
-                    <p><strong>Ende:</strong> {{ workshop.endtime }}</p>
+                    <p><strong>Uhrzeit:</strong> {{ workshop.starttime }} - {{ workshop.endtime }}</p>
+                </div>
+                <!-- Teilnehmer-Liste -->
+                <div id="participants-list-{{ forloop.counter }}" style="display: none; margin-top: 10px;">
+                    <h3>Teilnehmer:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        {% for teilnahme in workshop.teilnahme_set.all %}
+                        <li>{{ teilnahme.student.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <h2>Zweitägige Workshops</h2>
+        <ul style="list-style: none; padding: 0;">
+            {% for workshop in two_day_workshops %}
+            <li class="workshop-item" style="background-color: {% if workshop.participant_limit == workshop.teilnahme_set.count %}#ffcccc{% else %}#e7f3ff{% endif %}; padding: 15px; margin-bottom: 10px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <strong>{{ workshop.title }}</strong>
+                        <span style="cursor: pointer; color: #007bff;" onclick="toggleDetails('detailsTwoDay{{ forloop.counter }}')">Details</span>
+                    </div>
+                    <div class="participants">
+                        <span id="participants-count-{{ workshop.id }}">{{ workshop.teilnahme_set.count }}/{{ workshop.participant_limit }}</span>
+                        <button onclick="toggleParticipants('participants-list-{{ forloop.counter }}')">&#9660;</button>
+                    </div>
+                    <div>
+                        <a href="{% url 'edit_two_day_workshop' workshop.id %}"><button>Bearbeiten</button></a>
+                        <form method="post" action="{% url 'delete_workshop' workshop.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" onclick="return confirm('Möchten Sie diesen Workshop wirklich löschen?');">Löschen</button>
+                        </form>
+                    </div>
+                </div>
+                <!-- Workshop-Details -->
+                <div id="detailsTwoDay{{ forloop.counter }}" style="display: none; margin-top: 10px;">
+                    <p><strong>Lehrer:</strong> {{ workshop.teacher.name }}</p> 
+                    <p><strong>Beschreibung:</strong> {{ workshop.description }}</p>
+                    <p><strong>Ort:</strong> {{ workshop.location }}</p>
+                    <p><strong>Startdatum:</strong> {{ workshop.start_date }}</p>
+                    <p><strong>Enddatum:</strong> {{ workshop.end_date }}</p>
+                    {% if workshop.overnight %}
+                        <p><strong>Uhrzeit:</strong> {{ workshop.day1_start_time }} - {{ workshop.day1_end_time }}</p>
+                    {% else %}
+                        <p><strong>Tag 1:</strong> {{ workshop.day1_start_time }} - {{ workshop.day1_end_time }}</p>
+                        <p><strong>Tag 2:</strong> {{ workshop.day2_start_time }} - {{ workshop.day2_end_time }}</p>
+                    {% endif %}
                 </div>
                 <!-- Teilnehmer-Liste -->
                 <div id="participants-list-{{ forloop.counter }}" style="display: none; margin-top: 10px;">

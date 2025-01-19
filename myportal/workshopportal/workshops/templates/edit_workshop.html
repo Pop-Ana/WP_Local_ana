@@ -5,43 +5,87 @@
 {% endblock %}
 
 {% block content %}
-<div class="workshop-form" >
-    <form method="post">
-        {% csrf_token %}
-        <label for="name">Titel:</label>
-        <input type="text" id="name" name="name" value="{{ workshop.title }}" required><br>
-    
-        <label for="description">Beschreibung:</label>
-        <textarea id="description" name="description" required>{{ workshop.description }}</textarea><br>
-    
+  <h1>Workshop Bearbeiten</h1>
+  <form method="post">
+    {% csrf_token %}
+    <div class="workshop-form">
+      <label for="workshop_type">Workshop-Typ:</label>
+      <select id="workshop_type" name="workshop_type" disabled>
+        <option value="single" {% if workshop_type == 'single' %}selected{% endif %}>Ein-Tages-Workshop</option>
+        <option value="two_day" {% if workshop_type == 'two_day' %}selected{% endif %}>Zwei-Tages-Workshop</option>
+      </select><br>
+
+      <label for="title">Titel:</label>
+      <input type="text" id="title" name="title" value="{{ workshop.title }}" required><br>
+
+      <label for="description">Beschreibung:</label>
+      <textarea id="description" name="description" required>{{ workshop.description }}</textarea><br>
+
+      <label for="location">Ort:</label>
+      <input type="text" id="location" name="location" value="{{ workshop.location }}" required><br>
+
+      <div id="single_day_fields" {% if workshop_type == 'two_day' %}style="display: none;"{% endif %}>
         <label for="date">Datum:</label>
-        <input type="date" id="date" name="date" value="{{ workshop.date|date:'Y-m-d' }}" required><br>
-    
+        <input type="date" id="date" name="date" value="{{ workshop.date|date:'Y-m-d' }}"><br>
+
         <label for="start_time">Startzeit:</label>
-        <input type="time" id="start_time" name="start_time" value="{{ workshop.starttime|time:'H:i' }}" required><br>
-    
+        <input type="time" id="start_time" name="start_time" value="{{ workshop.starttime|time:'H:i' }}"><br>
+
         <label for="end_time">Endzeit:</label>
-        <input type="time" id="end_time" name="end_time" value="{{ workshop.endtime|time:'H:i' }}" required><br>
-    
-        <label for="location">Ort:</label>
-        <input type="text" id="location" name="location" value="{{ workshop.location }}" required><br>
-    
-        <label for="participants">Teilnehmerlimit:</label>
-        <input type="number" id="participants" name="participants" value="{{ workshop.participant_limit }}" required><br>
-    
-        <label for="cost">Kosten:</label>
-        <input type="number" step="0.01" id="cost" name="cost" value="{{ workshop.cost }}" required><br>
-    
-        <label for="teacher_kuerzel">Lehrer:</label>
-        <select id="teacher_kuerzel" name="teacher_kuerzel" required>
-            {% for teacher in teachers %}
-                <option value="{{ teacher.kuerzel }}" {% if teacher == workshop.teacher %}selected{% endif %}>
-                    {{ teacher.kuerzel }} - {{ teacher.name }}
-                </option>
-            {% endfor %}
-        </select><br>
-    
-        <button type="submit">Workshop aktualisieren</button>
-    </form>
-</div>
+        <input type="time" id="end_time" name="end_time" value="{{ workshop.endtime|time:'H:i' }}"><br>
+      </div>
+
+      <div id="two_day_fields" {% if workshop_type == 'single' %}style="display: none;"{% endif %}>
+        <label for="start_date">Startdatum:</label>
+        <input type="date" id="start_date" name="start_date" value="{{ workshop.start_date|date:'Y-m-d' }}"><br>
+
+        <label for="end_date">Enddatum:</label>
+        <input type="date" id="end_date" name="end_date" value="{{ workshop.end_date|date:'Y-m-d' }}"><br>
+
+        <label for="day1_start_time">Tag 1 Startzeit:</label>
+        <input type="time" id="day1_start_time" name="day1_start_time" value="{{ workshop.day1_start_time|time:'H:i' }}"><br>
+
+        <label for="day1_end_time">Tag 1 Endzeit:</label>
+        <input type="time" id="day1_end_time" name="day1_end_time" value="{{ workshop.day1_end_time|time:'H:i' }}"><br>
+
+        <label for="day2_start_time">Tag 2 Startzeit:</label>
+        <input type="time" id="day2_start_time" name="day2_start_time" value="{{ workshop.day2_start_time|time:'H:i' }}"><br>
+
+        <label for="day2_end_time">Tag 2 Endzeit:</label>
+        <input type="time" id="day2_end_time" name="day2_end_time" value="{{ workshop.day2_end_time|time:'H:i' }}"><br>
+
+        <label for="overnight">Übernachtung:</label>
+        <input type="checkbox" id="overnight" name="overnight" {% if workshop.overnight %}checked{% endif %}><br>
+      </div>
+
+      <label for="participants">Teilnehmerlimit:</label>
+      <input type="number" id="participants" name="participants" value="{{ workshop.participant_limit }}" required><br>
+
+      <label for="cost">Kosten:</label>
+      <input type="number" step="0.01" id="cost" name="cost" value="{{ workshop.cost }}" required><br>
+
+      <label for="teacher_kuerzel">Lehrer:</label>
+      <select id="teacher_kuerzel" name="teacher_kuerzel" required>
+        {% for teacher in teachers %}
+          <option value="{{ teacher.kuerzel }}" {% if workshop.teacher.kuerzel == teacher.kuerzel %}selected{% endif %}>{{ teacher.kuerzel }} - {{ teacher.name }}</option>
+        {% endfor %}
+      </select><br>
+
+      <button type="submit">Workshop aktualisieren</button>
+    </div>
+  </form>
+
+  <script>
+    document.getElementById('workshop_type').addEventListener('change', function() {
+      var singleDayFields = document.getElementById('single_day_fields');
+      var twoDayFields = document.getElementById('two_day_fields');
+      if (this.value === 'two_day') {
+        singleDayFields.style.display = 'none';
+        twoDayFields.style.display = 'block';
+      } else {
+        singleDayFields.style.display = 'block';
+        twoDayFields.style.display = 'none';
+      }
+    });
+  </script>
 {% endblock %}

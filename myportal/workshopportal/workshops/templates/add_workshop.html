@@ -1,51 +1,188 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Workshops hinzufügen
+  Workshop hinzufügen
 {% endblock %}
 
-<nav>
-    <ul>
-        <li><a href="/workshops">Home</a></li>
-    </ul>
-</nav>
 {% block content %}
-    <h1>Workshop Hinzufügen</h1>
-    <div class="workshop-form" >
-        <form method="post">
-            {% csrf_token %}
-            <label for="name">Titel:</label>
-            <input type="text" id="name" name="name" required><br>
-        
-            <label for="description">Beschreibung:</label>
-            <textarea id="description" name="description" required></textarea><br>
-        
-            <label for="date">Datum:</label>
-            <input type="date" id="date" name="date" required><br>
-        
-            <label for="start_time">Startzeit:</label>
-            <input type="time" id="start_time" name="start_time" required><br>
-        
-            <label for="end_time">Endzeit:</label>
-            <input type="time" id="end_time" name="end_time" required><br>
-        
-            <label for="location">Ort:</label>
-            <input type="text" id="location" name="location" required><br>
-        
-            <label for="participants">Teilnehmerlimit:</label>
-            <input type="number" id="participants" name="participants" required><br>
-        
-            <label for="cost">Kosten:</label>
-            <input type="number" step="0.01" id="cost" name="cost" required><br>
-        
-            <label for="teacher_kuerzel">Lehrer:</label>
-            <select id="teacher_kuerzel" name="teacher_kuerzel" required>
-                {% for teacher in teachers %}
-                    <option value="{{ teacher.kuerzel }}">{{ teacher.kuerzel }} - {{ teacher.name }}</option>
-                {% endfor %}
-            </select><br>
-        
-            <button type="submit">Workshop hinzufügen</button>
-        </form>
+  <h1>Workshop hinzufügen</h1>
+  <form method="post">
+    {% csrf_token %}
+    <div class="workshop-form">
+      <label for="workshop_type">Workshop-Typ:</label>
+      <select id="workshop_type" name="workshop_type" required>
+        <option value="single">Ein-Tages-Workshop</option>
+        <option value="two_day">Zwei-Tages-Workshop</option>
+      </select><br>
+
+      <label for="title">Titel:</label>
+      <input type="text" id="title" name="title" required><br>
+
+      <label for="description">Beschreibung:</label>
+      <textarea id="description" name="description" required></textarea><br>
+
+      <label for="location">Ort:</label>
+      <input type="text" id="location" name="location" required><br>
+
+      <div id="single_day_fields">
+        <label for="date">Datum:</label>
+        <input type="date" id="date" name="date"><br>
+
+        <label for="start_time">Startzeit:</label>
+        <input type="time" id="start_time" name="start_time"><br>
+
+        <label for="end_time">Endzeit:</label>
+        <input type="time" id="end_time" name="end_time"><br>
+      </div>
+
+      <div id="two_day_fields" style="display: none;">
+        <label for="start_date">Startdatum:</label>
+        <input type="date" id="start_date" name="start_date"><br>
+
+        <label for="end_date">Enddatum:</label>
+        <input type="date" id="end_date" name="end_date"><br>
+
+        <div class="checkbox-container">
+          <label for="overnight">Übernachtung:</label>
+          <input type="checkbox" id="overnight" name="overnight">
+        </div><br>
+
+        <p>Wenn Übernachtung, dann nur Zeiten bei Tag 1 ausfüllen </p>
+
+        <label for="day1_start_time">Startzeit(Tag 1):</label>
+        <input type="time" id="day1_start_time" name="day1_start_time"><br>
+
+        <label for="day1_end_time">Endzeit(Tag 1):</label>
+        <input type="time" id="day1_end_time" name="day1_end_time"><br>
+
+        <label for="day2_start_time">Startzeit(Tag 2):</label>
+        <input type="time" id="day2_start_time" name="day2_start_time"><br>
+
+        <label for="day2_end_time">Endzeit (Tag 2):</label>
+        <input type="time" id="day2_end_time" name="day2_end_time"><br>
+      </div>
+
+      <label for="participants">Teilnehmerlimit:</label>
+      <input type="number" id="participants" name="participants" required><br>
+
+      <label for="cost">Kosten:</label>
+      <input type="number" step="0.01" id="cost" name="cost" required><br>
+
+      <label for="teacher_kuerzel">Lehrer:</label>
+      <select id="teacher_kuerzel" name="teacher_kuerzel" required>
+        {% for teacher in teachers %}
+          <option value="{{ teacher.kuerzel }}">{{ teacher.kuerzel }} - {{ teacher.name }}</option>
+        {% endfor %}
+      </select><br>
+
+      <label for="class">Klasse:</label>
+      <select id="class" name="class" required>
+        <option value="">Wählen Sie eine Klasse</option>
+        {% for klasse in classes %}
+          <option value="{{ klasse.id }}">{{ klasse.name }}</option>
+        {% endfor %}
+      </select><br>
+
+      <div id="students-container" style="display: none;">
+        <label for="students">Schüler:</label>
+        <div id="students-list">
+          <!-- Schüler-Checkboxen werden hier dynamisch eingefügt -->
+        </div>
+      </div><br>
+
+      <input type="hidden" id="selected_students" name="selected_students" value="">
+
+      <div id="selected-students-container">
+        <h3>Ausgewählte Schüler:</h3>
+        <ul id="selected-students-list">
+          <!-- Ausgewählte Schüler werden hier angezeigt -->
+        </ul>
+      </div><br>
+
+      <button type="submit">Workshop hinzufügen</button>
     </div>
+  </form>
+
+  <script>
+    document.getElementById('workshop_type').addEventListener('change', function() {
+      var singleDayFields = document.getElementById('single_day_fields');
+      var twoDayFields = document.getElementById('two_day_fields');
+      if (this.value === 'two_day') {
+        singleDayFields.style.display = 'none';
+        twoDayFields.style.display = 'block';
+      } else {
+        singleDayFields.style.display = 'block';
+        twoDayFields.style.display = 'none';
+      }
+    });
+
+    document.getElementById('class').addEventListener('change', function() {
+      var classId = this.value;
+      var studentsContainer = document.getElementById('students-container');
+      var studentsList = document.getElementById('students-list');
+      var selectedStudentsInput = document.getElementById('selected_students');
+      var selectedStudents = selectedStudentsInput.value ? selectedStudentsInput.value.split(',') : [];
+      var selectedStudentsList = document.getElementById('selected-students-list');
+
+      studentsList.innerHTML = ''; // Clear previous students
+
+      if (classId) {
+        studentsContainer.style.display = 'block';
+
+        // Fetch students for the selected class
+        fetch(`/get_students_by_class/${classId}/`)
+          .then(response => response.json())
+          .then(data => {
+            data.students.forEach(student => {
+              var checkbox = document.createElement('input');
+              checkbox.type = 'checkbox';
+              checkbox.id = `student_${student.id}`;
+              checkbox.name = 'students';
+              checkbox.value = student.id;
+              if (selectedStudents.includes(student.id.toString())) {
+                checkbox.checked = true;
+              }
+              checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                  selectedStudents.push(this.value);
+                  addSelectedStudent(student.id, student.name);
+                } else {
+                  selectedStudents = selectedStudents.filter(id => id !== this.value);
+                  removeSelectedStudent(student.id);
+                }
+                selectedStudentsInput.value = selectedStudents.join(',');
+              });
+
+              var label = document.createElement('label');
+              label.htmlFor = `student_${student.id}`;
+              label.textContent = student.name;
+
+              var div = document.createElement('div');
+              div.appendChild(checkbox);
+              div.appendChild(label);
+
+              studentsList.appendChild(div);
+            });
+          });
+      } else {
+        studentsContainer.style.display = 'none';
+      }
+    });
+
+    function addSelectedStudent(id, name) {
+      var selectedStudentsList = document.getElementById('selected-students-list');
+      var li = document.createElement('li');
+      li.id = `selected_student_${id}`;
+      li.textContent = name;
+      selectedStudentsList.appendChild(li);
+    }
+
+    function removeSelectedStudent(id) {
+      var selectedStudentsList = document.getElementById('selected-students-list');
+      var li = document.getElementById(`selected_student_${id}`);
+      if (li) {
+        selectedStudentsList.removeChild(li);
+      }
+    }
+  </script>
 {% endblock %}
